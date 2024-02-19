@@ -1,5 +1,72 @@
 package main
 
+import (
+	"io"
+	"os"
+	"strings"
+	"testing"
+)
+
+func Test_UpdateMessage(t *testing.T) {
+	wg.Add(1)
+
+	go UpdateMessage("some message")
+	wg.Wait()
+
+	if message != "some message" {
+		t.Errorf("Expected message to be updated, but it was not")
+	}
+}
+
+func Test_PrintMessage(t *testing.T) {
+	stdOut := os.Stdout
+
+	read, write, _ := os.Pipe()
+	os.Stdout = write
+
+	message = "Hello, world!"
+
+	PrintMessage()
+
+	_ = write.Close()
+
+	result, _ := io.ReadAll(read)
+
+	output := string(result)
+
+	os.Stdout = stdOut
+
+	if !strings.Contains(output, "Hello, world!") {
+		t.Errorf("Expected to find alpha, but it was not found")
+	}
+}
+
+func Test_main(t *testing.T) {
+	stdOut := os.Stdout
+
+	read, write, _ := os.Pipe()
+	os.Stdout = write
+
+	main()
+
+	_ = write.Close()
+
+	result, _ := io.ReadAll(read)
+	output := string(result)
+
+	os.Stdout = stdOut
+
+	if !strings.Contains(output, "Hello, universe!") {
+		t.Errorf("Expected to find Hello, universe!, but it was not found")
+	}
+	if !strings.Contains(output, "Hello, cosmos!") {
+		t.Errorf("Expected to find Hello, cosmos!, but it was not found")
+	}
+	if !strings.Contains(output, "Hello, world!") {
+		t.Errorf("Expected to find Hello, world!, but it was not found")
+	}
+}
+
 /* package challenges
 
 // Importa os pacotes necessários para o teste.
