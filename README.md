@@ -25,6 +25,7 @@ Go (Golang) simplifies concurrency with "go" for GoRoutines. Tools like WaitGrou
 
 - [1. Avoiding Deadlocks](#avoiding-deadlocks)
 - [2. Handling Negative WaitGroup Counter](#handling-negative-waitgroup-counter)
+- [3. Invalid memory address or nil pointer dereference](#3-invalid-memory-address-or-nil-pointer-dereference)
 
 # Dealing with Waiting Groups in Go
 
@@ -53,3 +54,68 @@ panic: sync: negative WaitGroup counter
 
 ### Solution:
 Ensure the waiting group size corresponds to the number of goroutines that need to be awaited. If there is an additional goroutine that is not being properly awaited, adjust the waiting group size accordingly, for example, by using wg.Add(1).
+
+## 3. Invalid memory address or nil pointer dereference
+
+### Issue:
+Can you find the problem here?
+
+```go
+var (
+	message  string
+	wg       *sync.WaitGroup
+	messages = []string{
+		"Hello, universe!",
+		"Hello, cosmos!",
+		"Hello, world!",
+	}
+)
+
+func UpdateMessage(stringMessage string) {
+	defer wg.Done()
+	message = stringMessage
+}
+
+func PrintMessage() {
+	fmt.Println(message)
+}
+
+func main() {
+	for _, msg := range messages {
+		wg.Add(1)
+
+		go UpdateMessage(msg)
+
+		wg.Wait()
+
+		PrintMessage()
+	}
+}
+
+```
+If we run the above code wi'll have 
+```powershell
+panic: runtime error: invalid memory address or nil pointer dereference
+[signal 0xc0000005 code=0x1 addr=0x0 pc=0x7adfc]
+```
+Pointing to this line:
+```go
+		wg.Add(1) // inside the for loop
+```
+
+### Solution:
+We reclared our waitGroup [ wg  *sync.WaitGroup] but anywhere in the code we initialized it 
+
+In Go, the zero value of a pointer is nil. Therefore, when we try to add to the WaitGroup using wg.Add(1) before initializing wg, it results in a nil pointer dereference.
+
+To fix this, we need to initialize the wg variable before using it. You can do this by assigning a new instance of sync.WaitGroup to wg before the loop.
+
+```go 
+...func main() {
+	wg = &sync.WaitGroup{} // Initialize the WaitGroup
+
+	for _, msg := range messages {
+		wg.Add(1)
+    ...
+```
+Now, wg is properly initialized, and the program should run without the nil pointer dereference error.

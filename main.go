@@ -28,8 +28,10 @@ func PrintMessage() {
 }
 
 func main() {
+	wg = &sync.WaitGroup{} // Initialize the WaitGroup
+
 	for _, msg := range messages {
-		wg.Add(1)
+		wg.Add(1)  //panic: runtime error: invalid memory address or nil pointer dereference
 
 		go UpdateMessage(msg)
 
