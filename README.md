@@ -1,6 +1,30 @@
 # Golang-concurrency
+# Learning Go Concurrency: Documentation Repository
+
+In the domain of Golang projects, I've explored goroutines, channels, and sync's waitGroups. To enhance my understanding, I've dedicated this repository to studying Go's concurrency features.
+
+## Purpose
+
+This repository serves as a comprehensive record of my exploration into Go's concurrency mechanisms. Beyond code, it's a documentation hub for my learning journey, chronicling challenges, and resolving errors.
+
+## Rationale for Study
+
+Studying is essential for navigating the complexities of Go's concurrency. The approach here acknowledges that errors are inevitable. Instead of ignoring them, this repository highlights not only correct solutions but also errors, missteps, pitfalls, and the lessons derived.
+
+## Contents
+
+- **Code Exploration:** In-depth examinations of goroutines, channels, and waitGroups through code snippets and examples.
+
+- **Error Documentation:** Transparent documentation of encountered errors. Understanding and learning often stem from addressing challenges.
+
+- **Learning Pathway:** A structured progression through Go's concurrency features, catering to both novices and adept developers.
+
+
+
 Go (Golang) simplifies concurrency with "go" for GoRoutines. Tools like WaitGroup, Mutex, and Channels manage concurrent tasks. This repo covers these in detail, addressing common issues. Classic problems illustrate concepts, and a real-world example demonstrates efficient concurrent task handling.
 
+- [1. Avoiding Deadlocks](#avoiding-deadlocks)
+- [2. Handling Negative WaitGroup Counter](#handling-negative-waitgroup-counter)
 
 # Dealing with Waiting Groups in Go
 
