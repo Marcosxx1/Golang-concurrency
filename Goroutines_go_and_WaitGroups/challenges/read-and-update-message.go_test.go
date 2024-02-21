@@ -1,13 +1,15 @@
-package main
+package goroutinesgoandwaitgroups
 
 import (
 	"io"
 	"os"
 	"strings"
+	"sync"
 	"testing"
 )
 
 func Test_UpdateMessage(t *testing.T) {
+	wg = sync.WaitGroup{} 
 	wg.Add(1)
 
 	go UpdateMessage("some message")
@@ -47,7 +49,7 @@ func Test_main(t *testing.T) {
 	read, write, _ := os.Pipe()
 	os.Stdout = write
 
-	main()
+	ReadAndUpdateMessage()
 
 	_ = write.Close()
 

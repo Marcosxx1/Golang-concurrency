@@ -5,52 +5,62 @@ import (
 	"sync"
 )
 
-var (
-	message  string
-	wg       *sync.WaitGroup
-	messages = []string{
-		"Hello, universe!",
-		"Hello, cosmos!",
-		"Hello, world!",
-	}
-)
+var packageMessage string
+var wg sync.WaitGroup
 
-// UpdateMessage updates the global 'message' variable and signals
-// that the goroutine is done using the WaitGroup.
-func UpdateMessage(stringMessage string) {
+
+/* In this example, even though we have two concurrent calls to updateMessage on LINE 13 and LINE 14,
+	 we're accessing packageMessage safely using a Mutex.
+
+	 If we were not using the Lock() and Unlock() methods to synchronize access to packageMessage,
+	 we would have a race condition where multiple goroutines could simultaneously update the
+	 packageMessage variable without coordination. In such a scenario, we wouldn't know which
+	 goroutine's update would prevail, leading to unpredictable and potentially incorrect results.
+
+	 Is it worthing noting that when a goroutine calls Lock(), it acquires the lock, and any other
+	 goroutine attempting to acquire the lock will be blocked until the first goroutine releases it
+	 with Unlock(). This ensure EXCLUSIVE ACCESS to the shared variable during the critical section
+*/
+
+func updateMessage(incomingMessage string, m *sync.Mutex) {
 	defer wg.Done()
-	message = stringMessage
-}
 
-// PrintMessage prints the current value of the global 'message' variable.
-func PrintMessage() {
-	fmt.Println(message)
+	m.Lock()
+	packageMessage = incomingMessage
+	m.Unlock()
 }
 
 func main() {
-	wg = &sync.WaitGroup{} // Initialize the WaitGroup
+	packageMessage = "Hi, there!"
 
-	for _, msg := range messages {
-		wg.Add(1)  //panic: runtime error: invalid memory address or nil pointer dereference
+	var mutex sync.Mutex
 
-		go UpdateMessage(msg)
+	wg.Add(2)
+	go updateMessage("Hi!", &mutex)
+	go updateMessage("Hi for everyone!", &mutex)
+	wg.Wait()
 
-		wg.Wait()
+	fmt.Println(packageMessage)
 
-		PrintMessage()
-	}
 }
 
-/* Explanation:
-	1 - wg.Add(1) [LINE 32] increments the WaitGroup counter by 1 before each goroutine starts.
-	The initial value of the counter is 0.
+/*
+	 sync.Mutex
 
-	2- go UpdateMessage(msg) [LINE 34] starts a new goroutine with the specified message. The defer wg.Done()
-	in UpdateMessage will decrement the WaitGroup counter by 1 when the goroutine exits.
+	* Mutex := "mutual exclusion" -- allow us to deal with race conditions
+	* Relative simple to use
+	* Dealing with shared resources and concurrent/parallel goroutines
+	* Lock/Unlock
+	* We can test for race conditions when running code, or testing
 
-	3 - wg.Wait() [LINE 36] is used to wait until the WaitGroup counter becomes 0. This effectively waits for
-	the currently running goroutine to finish before moving to the next iteration.
+	 Race Conditions
+	 * Race conditions occur when multiple GoRoutines try to access the same data
+	 * Can be difficult to spot when reading code
+	 * Go allow us to check for them when running a program, or when testing our code with go test
 
-	4 - PrintMessage() [LINE 38] prints the current value of the message variable.
-
-The loop then moves on to the next iteration, repeating the process for each message in the messages slice. */
+	 Channels
+	 * Channels are a means of having GoRoutines share data
+	 * They can talk to each other
+	 * This is Go's philosophy of having things share memory by communicating, rathen than communicating by sharing memory
+	 * The Producer/Consumre problem
+*/
