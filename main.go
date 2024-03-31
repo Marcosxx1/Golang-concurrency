@@ -1,13 +1,15 @@
 package main
 
 import (
-	bankbalance "first-example/lectures/mutex-race-conditions/bank-balance"
+	producerconsumer "first-example/lectures/mutex-race-conditions/producer-consumer"
 )
 
-func main(){
+func main() {
 	//challengeoneprintsomething.ChallengeOne()
 
 	//mutexraceconditions.Mutexraceconditions()
 
-	bankbalance.BankBalance()
+	// bankbalance.BankBalance()
+
+	producerconsumer.ProducerConsumer()
 }
