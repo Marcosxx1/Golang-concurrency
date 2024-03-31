@@ -13,15 +13,12 @@ type Income struct {
 }
 
 func BankBalance() {
-	// variable for bank balance
 	var bankbalance int
 	var balance sync.Mutex
 
-	// print out starting values
 	fmt.Printf("Initial account balance: R$%d.00", bankbalance)
 	fmt.Println()
 
-	// define weekly revenue
 	incomes := []Income{
 		{Source: "Main job", Amount: 10},
 		{Source: "Harvesting", Amount: 100},
@@ -29,7 +26,6 @@ func BankBalance() {
 
 	wg.Add(len(incomes))
 
-	//loop through 52 weeks and print out how much is made; keep a running total
 	for index, income := range incomes {
 
 		go func(index int, income Income) {
@@ -51,7 +47,6 @@ func BankBalance() {
 
 	wg.Wait()
 
-	// print out final balance
 	fmt.Printf("Final bank balance: R$%d.00", bankbalance)
 	fmt.Println()
 }
